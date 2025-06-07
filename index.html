@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mi Web SMM</title>
+</head>
+<body>
+  <h1>Servicios SMM</h1>
+  <button onclick="cargarServicios()">Ver servicios</button>
+  <ul id="servicios"></ul>
+
+  <h2>Crear Pedido</h2>
+  <form onsubmit="enviarPedido(event)">
+    <input type="text" id="link" placeholder="Enlace" required />
+    <input type="number" id="cantidad" placeholder="Cantidad" required />
+    <input type="number" id="servicioID" placeholder="ID del servicio" required />
+    <button type="submit">Enviar</button>
+  </form>
+
+  <p id="resultado"></p>
+
+  <script>
+    const BACKEND_URL = 'https://TU_BACKEND.repl.co'; // Reemplaza con la URL de tu backend en Replit
+
+    function cargarServicios() {
+      fetch(`${BACKEND_URL}/servicios`)
+        .then(res => res.json())
+        .then(data => {
+          const ul = document.getElementById("servicios");
+          ul.innerHTML = '';
+          data.forEach(s => {
+            const li = document.createElement("li");
+            li.textContent = `${s.service} - ${s.name} - $${s.rate}`;
+            ul.appendChild(li);
+          });
+        });
+    }
+
+    function enviarPedido(e) {
+      e.preventDefault();
+      const link = document.getElementById("link").value;
+      const cantidad = document.getElementById("cantidad").value;
+      const servicioID = document.getElementById("servicioID").value;
+
+      fetch(`${BACKEND_URL}/pedido`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ link, cantidad, servicioID })
+      })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("resultado").textContent = "Pedido creado. ID: " + data.order;
+        });
+    }
+  </script>
+</body>
+</html>
